@@ -1,4 +1,4 @@
-# Deck of Card for M5 Cardputer
+# Deck of Cards for M5 Cardputer
 
 by [Jared Pellegrini](https://github.com/jaredpellegrini)
 
