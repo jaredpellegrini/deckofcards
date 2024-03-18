@@ -4,7 +4,7 @@
  * @copyright Copyright 2024 Jared Pellegrini
  * @license Apache License, Version 2.0 - https://www.apache.org/licenses/LICENSE-2.0
  * @brief   Selects random cards one at a time from a standard deck, with or without jokers.
- * @version 0.2
+ * @version 0.3
  * @date    2024-03-18 (Created 2024-03-17)
  *
  * Targets the M5 Cardputer.
@@ -25,7 +25,7 @@
 #include <vector>
 
 const uint8_t MAJOR_VERSION = 0;
-const uint8_t MINOR_VERSION = 2;
+const uint8_t MINOR_VERSION = 3;
 const uint8_t MAX_CARDS_TO_SHOW = 8;
 
 uint8_t fontHeight;
