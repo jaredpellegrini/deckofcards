@@ -16,8 +16,9 @@
  * 1. String (Capital String) is an Arduino String not a C++ std::string
  *
  * CHANGELOG
- * v0.1: First version.
+ * v0.3: Reset cardsToShow on shuffle
  * v0.2: Display up to 8 drawn cards. [C] to clear.
+ * v0.1: First version.
  */
 
 #include "M5Cardputer.h"
@@ -32,7 +33,6 @@ uint8_t displayHeight;
 uint8_t displayWidth;
 
 bool allowJokers = 1;
-int8_t cardIndex = -1;
 uint8_t cardsToShow = 0;
 
 String suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
@@ -80,10 +80,12 @@ void loop() {
 }
 
 void shuffleDeck() {
+  //reset the number of cards shown
+  cardsToShow = 0;
+  //empty the drawn pile
   drawn.clear();
+  //empty the deck
   deck.clear();
-  // set cardIndex to -1 to indicate that no card has been drawn from the new deck yet
-  cardIndex = -1;
   // insert 2-10, then J, Q, K, A for each suit
   for (uint8_t i = 0; i < 4; i++) {
     for (uint8_t j = 2; j <= 10; j++) { deck.push_back(String(j) + "-" + suits[i]); }
@@ -127,7 +129,7 @@ void displayDeck() {
   M5Cardputer.Display.drawString("[D]raw", displayWidth, 0);
   M5Cardputer.Display.setTextDatum(textdatum_t::top_left);
 
-  if (cardIndex >= 0 && cardsToShow <= drawn.size()) {
+  if (cardsToShow > 0 && cardsToShow <= drawn.size()) {
     for (uint8_t i = 1; i <= cardsToShow; i++) {
       //split into two columns
       if (i <= MAX_CARDS_TO_SHOW / 2) {
@@ -151,7 +153,7 @@ void displayDeck() {
 void drawCard() {
   if (!deck.empty()) {
     // generate a random index, pull that card from the deck and add it to the drawn pile
-    cardIndex = random(0, deck.size());
+    int8_t cardIndex = random(0, deck.size());
     drawn.push_back(deck.at(cardIndex));
     deck.erase(deck.begin()+cardIndex);
     if (cardsToShow < MAX_CARDS_TO_SHOW) { cardsToShow++; }
