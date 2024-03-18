@@ -14,6 +14,7 @@ Targets the [M5 Cardputer](https://docs.m5stack.com/en/core/Cardputer).
 # CHANGELOG
 
 * v0.1: First version.
+* v0.2: Display up to 8 drawn cards. [C] to clear.
 
 # References
 

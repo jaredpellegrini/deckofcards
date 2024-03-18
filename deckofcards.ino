@@ -4,36 +4,37 @@
  * @copyright Copyright 2024 Jared Pellegrini
  * @license Apache License, Version 2.0 - https://www.apache.org/licenses/LICENSE-2.0
  * @brief   Selects random cards one at a time from a standard deck, with or without jokers.
- * @version 0.1
- * @date    2024-03-17 (Created 2024-03-17)
+ * @version 0.2
+ * @date    2024-03-18 (Created 2024-03-17)
  *
  * Targets the M5 Cardputer.
  *
  * A card will only be drawn from the deck once per shuffle.
  * Toggling jokers will force a re-shuffle.
  * 
- * NOTEs:
+ * NOTES:
  * 1. String (Capital String) is an Arduino String not a C++ std::string
- *
- * TODO:
- * 1. Display (6?) most recently drawn cards
  *
  * CHANGELOG
  * v0.1: First version.
+ * v0.2: Display up to 8 drawn cards. [C] to clear.
  */
 
 #include "M5Cardputer.h"
 #include <vector>
 
 const uint8_t MAJOR_VERSION = 0;
-const uint8_t MINOR_VERSION = 1;
+const uint8_t MINOR_VERSION = 2;
+const uint8_t MAX_CARDS_TO_SHOW = 8;
 
 uint8_t fontHeight;
 uint8_t displayHeight;
 uint8_t displayWidth;
-bool allowJokers = 1;
 
+bool allowJokers = 1;
 int8_t cardIndex = -1;
+uint8_t cardsToShow = 0;
+
 String suits[4] = {"Clubs", "Diamonds", "Hearts", "Spades"};
 std::vector<String> deck;
 std::vector<String> drawn;
@@ -64,6 +65,9 @@ void loop() {
       displayDeck();
     } else if (M5Cardputer.Keyboard.isKeyPressed('d')) {
       drawCard();
+    } else if (M5Cardputer.Keyboard.isKeyPressed('c')) {
+      cardsToShow = 0;
+      displayDeck();
     } else if (M5Cardputer.Keyboard.isKeyPressed('s')) {
       shuffleDeck();
       displayDeck();
@@ -116,11 +120,22 @@ void displaySplash() {
 void displayDeck() {
   M5Cardputer.Display.clear();
   M5Cardputer.Display.setTextColor(deck.size() > 0 ? DARKGREEN : MAROON);
-  M5Cardputer.Display.setTextDatum(textdatum_t::top_center);
-  M5Cardputer.Display.drawString("Cards Remaining: " + String(deck.size()), displayWidth / 2, 0 * fontHeight);
+  M5Cardputer.Display.setTextDatum(textdatum_t::top_left);
+  M5Cardputer.Display.drawString("Cards Remaining: " + String(deck.size()), 0, 0);
+  M5Cardputer.Display.setTextColor(DARKGREY);
+  M5Cardputer.Display.setTextDatum(textdatum_t::top_right);
+  M5Cardputer.Display.drawString("[D]raw", displayWidth, 0);
+  M5Cardputer.Display.setTextDatum(textdatum_t::top_left);
 
-  if (cardIndex >= 0) {
-    M5Cardputer.Display.drawString(displayCard(drawn.at(drawn.size() - 1)), displayWidth / 2, 2 * fontHeight);
+  if (cardIndex >= 0 && cardsToShow <= drawn.size()) {
+    for (uint8_t i = 1; i <= cardsToShow; i++) {
+      //split into two columns
+      if (i <= MAX_CARDS_TO_SHOW / 2) {
+        M5Cardputer.Display.drawString(displayCard(drawn.at(drawn.size() - i)), 0, (i + 1) * fontHeight);
+      } else if (i <= MAX_CARDS_TO_SHOW) {
+        M5Cardputer.Display.drawString(displayCard(drawn.at(drawn.size() - i)), displayWidth / 2, (i - 3) * fontHeight);
+      }
+    }
   }
 
   M5Cardputer.Display.setTextColor(DARKGREY);
@@ -128,7 +143,7 @@ void displayDeck() {
   String s = allowJokers ? "[J]okers=on" : "[J]okers=off";
   M5Cardputer.Display.drawString(s, 0, displayHeight);
   M5Cardputer.Display.setTextDatum(textdatum_t::bottom_center);
-  M5Cardputer.Display.drawString("      [D]raw", displayWidth / 2, displayHeight);
+  M5Cardputer.Display.drawString("      [C]lear", displayWidth / 2, displayHeight);
   M5Cardputer.Display.setTextDatum(textdatum_t::bottom_right);
   M5Cardputer.Display.drawString("[S]huffle", displayWidth, displayHeight);
 }
@@ -139,6 +154,7 @@ void drawCard() {
     cardIndex = random(0, deck.size());
     drawn.push_back(deck.at(cardIndex));
     deck.erase(deck.begin()+cardIndex);
+    if (cardsToShow < MAX_CARDS_TO_SHOW) { cardsToShow++; }
     displayDeck();
   }
 }
