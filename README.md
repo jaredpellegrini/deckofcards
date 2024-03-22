@@ -13,6 +13,7 @@ Targets the [M5 Cardputer](https://docs.m5stack.com/en/core/Cardputer).
 
 # CHANGELOG
 
+* v0.4: Draw suits. Display up to 12 cards.
 * v0.3: Reset cardsToShow on shuffle
 * v0.2: Display up to 8 drawn cards. [C] to clear.
 * v0.1: First version.
