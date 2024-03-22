@@ -24,7 +24,6 @@
 
 #include "M5Cardputer.h"
 #include <vector>
-#include <string>
 
 const uint8_t MAJOR_VERSION = 0;
 const uint8_t MINOR_VERSION = 4;
